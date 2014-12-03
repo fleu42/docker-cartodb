@@ -50,7 +50,7 @@ RUN service postgresql start && /bin/su postgres -c \
       /tmp/template_postgis.sh && service postgresql stop
 
 # Install cartodb extension
-RUN git clone --branch 0.4.1 https://github.com/CartoDB/cartodb-postgresql && \
+RUN git clone --branch 0.5.0 https://github.com/CartoDB/cartodb-postgresql && \
       cd cartodb-postgresql && \
       PGUSER=postgres make install
 ADD ./cartodb_pgsql.sh /tmp/cartodb_pgsql.sh
