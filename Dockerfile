@@ -101,7 +101,8 @@ RUN service postgresql start && service redis-server start && \
 	bash -l -c "cd /cartodb && bash script/create_dev_user" && \
 	service postgresql stop && service redis-server stop
 
-EXPOSE 3000
+EXPOSE 3000 8080 8181
+
 
 ADD ./startup.sh /opt/startup.sh
 

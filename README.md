@@ -21,7 +21,7 @@ How to run the container:
 --------------
 
 ```
-docker run -t -i fleu42/docker-cartodb -p 3000:3000 /bin/bash
+docker run -t -i -p 3000:3000 -p 8080:8080 -p 8181:8181 fleu42/docker-cartodb 
 ```
 
 You might need to add dev.cartodb.localhost to your hosts file.
