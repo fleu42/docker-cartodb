@@ -35,6 +35,19 @@ RUN apt-get install -y -q build-essential checkinstall unp zip libgeos-c1 \
       pkg-config libpq5 libpq-dev libcurl4-gnutls-dev libffi-dev \
       libgdbm-dev gnupg libreadline6-dev 
 
+# Install rvm
+RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
+RUN curl -L https://get.rvm.io | bash -s stable --ruby
+RUN echo 'source /usr/local/rvm/scripts/rvm' >> /etc/bash.bashrc
+RUN /bin/bash -l -c rvm requirements
+ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+RUN /bin/bash -l -c 'rvm install 1.9.3-p547 --patch railsexpress'
+RUN /bin/bash -l -c 'rvm use 1.9.3-p547 --default'
+RUN /bin/bash -l -c 'gem install bundle archive-tar-minitar'
+
+# Install bundler
+RUN /bin/bash -l -c 'gem install bundler --no-doc --no-ri'
+
 # Setting PostgreSQL
 RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/9.3/main/pg_hba.conf
 
@@ -50,7 +63,7 @@ RUN service postgresql start && /bin/su postgres -c \
       /tmp/template_postgis.sh && service postgresql stop
 
 # Install cartodb extension
-RUN git clone --branch 0.5.1 https://github.com/CartoDB/cartodb-postgresql && \
+RUN git clone --branch 0.5.2 https://github.com/CartoDB/cartodb-postgresql && \
       cd cartodb-postgresql && \
       PGUSER=postgres make install
 ADD ./cartodb_pgsql.sh /tmp/cartodb_pgsql.sh
@@ -68,19 +81,6 @@ RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
       cd Windshaft-cartodb && ./configure && npm install && mkdir logs
 ADD ./config/WS-dev.js \
       /Windshaft-cartodb/config/environments/development.js
-
-# Install rvm
-RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
-RUN curl -L https://get.rvm.io | bash -s stable --ruby
-RUN echo 'source /usr/local/rvm/scripts/rvm' >> /etc/bash.bashrc
-RUN /bin/bash -l -c rvm requirements
-ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-RUN /bin/bash -l -c 'rvm install 1.9.3-p547 --patch railsexpress'
-RUN /bin/bash -l -c 'rvm use 1.9.3-p547 --default'
-RUN /bin/bash -l -c 'gem install bundle archive-tar-minitar'
-
-# Install bundler
-RUN /bin/bash -l -c 'gem install bundler --no-doc --no-ri'
 
 # Install CartoDB (with the bug correction on bundle install)
 RUN git clone git://github.com/CartoDB/cartodb.git && \
