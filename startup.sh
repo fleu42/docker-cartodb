@@ -13,6 +13,7 @@ cd /CartoDB-SQL-API
 node app.js development &
 
 cd /cartodb
+script/restore_redis
 bundle exec script/resque &
 bundle exec rails s -p $PORT
 
