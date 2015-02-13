@@ -4,7 +4,7 @@ docker-cartodb
 That container provides a fully working cartodb development solution
 without the installation hassle.
 
-Just run and connect to locahost:3000 into you browser.
+Just run and connect to http://dev.cartodb.localhost:3000 into you browser.
 
 The default login is dev/pass. You may want to change it when you'll run
 it for the outside.
@@ -24,5 +24,5 @@ How to run the container:
 docker run -t -i fleu42/docker-cartodb -p 3000:3000 /bin/bash
 ```
 
-You might need to add dev.localhost to your hosts file.
+You might need to add dev.cartodb.localhost to your hosts file.
 

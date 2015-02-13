@@ -130,7 +130,7 @@ var config = {
         // The "domain" part will be appended to 
         // the cartodb username and passed to
         // SQL-API requests in the Host HTTP header
-        domain: 'localhost',
+        domain: 'cartodb.localhost',
         version: 'v1',
         // Maximum lenght of SQL query for GET
         // requests. Longer queries will be sent
