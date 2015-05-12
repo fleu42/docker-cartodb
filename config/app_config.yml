@@ -182,9 +182,9 @@ defaults: &defaults
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:
-    base_url: 'example.com/avatars'
-    kinds: ['stars', 'mountains']
-    colors: ['red', 'blue']
+    base_url: '//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars'
+    kinds: ['ghost', 'marker', 'mountain', 'pacman', 'planet', 'stars']
+    colors: ['green', 'orange', 'red', 'yellow']
   dropbox_api_key: ""
   gdrive: 
     api_key: ""
@@ -256,6 +256,35 @@ defaults: &defaults
   user_feature_flags:
     rambo:    ['ghost_tables']
   basemaps:
+    Nokia:
+      normal_day:
+        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
+        minZoom: '0'
+        maxZoom: '21'
+        className:    "nokia_normal_day"
+        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+        name: 'Nokia normal Day'
+      terrain_day:
+        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/terrain.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
+        minZoom: '0'
+        maxZoom: '21'
+        className:    "nokia_terrain_day"
+        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+        name: 'Nokia Terrain Day'
+      satellite_day:
+        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
+        minZoom: '0'
+        maxZoom: '21'
+        className:    "nokia_satellite_day"
+        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+        name: 'Nokia Satellite Day'
+      hybrid_day:
+        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/hybrid.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
+        minZoom: '0'
+        maxZoom: '21'
+        className:    "nokia_hybrid_day"
+        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+        name: 'Nokia hybrid Day'
     CartoDB:
       positron_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
