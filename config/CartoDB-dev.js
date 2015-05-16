@@ -1,4 +1,6 @@
-module.exports.base_url     = '/api/:version';
+// In case the base_url has a :user param the username will be the one specified in the URL,
+// otherwise it will fallback to extract the username from the host header.
+module.exports.base_url     = '(?:/api/:version|/user/:user/api/:version)';
 // If useProfiler is true every response will be served with an
 // X-SQLAPI-Profile header containing elapsed timing for various
 // steps taken for producing the response.
@@ -34,6 +36,17 @@ module.exports.db_pool_size = 500;
 module.exports.db_pool_idleTimeout = 30000;
 // Milliseconds between idle client checking
 module.exports.db_pool_reapInterval = 1000;
+// max number of bytes for a row, when exceeded the query will throw an error
+//module.exports.db_max_row_size = 10 * 1024 * 1024;
+// allows to use an object to connect with node-postgres instead of a connection string
+//module.exports.db_use_config_object = true;
+// requires enabling db_use_config_object=true
+// allows to enable/disable keep alive for database connections
+// by default is not enabled
+//module.exports.db_keep_alive = {
+//    enabled: true,
+//    initialDelay: 5000
+//};
 module.exports.redis_host   = '127.0.0.1';
 module.exports.redis_port   = 6379;
 module.exports.redisPool    = 50;
