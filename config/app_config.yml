@@ -25,24 +25,24 @@ defaults: &defaults
     private:
       protocol:      'http'
       domain:        'cartodb.localhost'
-      port:          '8181'
+      port:          '80'
       verifycert:     false
     public:
       protocol:      'http'
       domain:        'cartodb.localhost'
-      port:          '8181'
+      port:          '80'
       verifycert:     false
   sql_api:
     private:
       protocol:   'http'
       domain:     'cartodb.localhost'
-      endpoint:   '/api/v1/sql'
-      port:       8080
+      endpoint:   '/api/v2/sql'
+      port:       80
     public:
       protocol:   'http'
       domain:     'cartodb.localhost'
-      endpoint:   '/api/v1/sql'
-      port:       8080
+      endpoint:   '/api/v2/sql'
+      port:       80
   api_requests_service_url: ''
   developers_host:    'http://developers.cartodb.localhost:3000'
   google_analytics:
@@ -63,7 +63,7 @@ defaults: &defaults
   common_data:
     protocol: 'https'
     username: 'common-data'
-    host: 'cartodb.com'
+    host: 'cartodb.localhost'
     format: 'shp'
     generate_every: 86400
   explore-api:
@@ -429,4 +429,3 @@ staging:
 
 production:
   <<: *defaults
-
