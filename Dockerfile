@@ -86,6 +86,7 @@ RUN apt-get update && \
     libjpeg8-dev \
     libpango1.0-dev \
     libgif-dev \
+    pgtune \
   --no-install-recommends &&\
   rm -rf /var/lib/apt/lists/*
 
@@ -104,7 +105,10 @@ RUN /bin/bash -l -c 'gem install bundle archive-tar-minitar'
 RUN /bin/bash -l -c 'gem install bundler --no-doc --no-ri'
 
 # Setting PostgreSQL
-RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/9.3/main/pg_hba.conf
+RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/9.3/main/pg_hba.conf && \
+      pgtune -T Web -c 100 -i /etc/postgresql/9.3/main/postgresql.conf -o /etc/postgresql/9.3/main/postgresql.conf.pgtune && \
+      mv /etc/postgresql/9.3/main/postgresql.conf /etc/postgresql/9.3/main/postgresql.conf.orig && \
+      mv /etc/postgresql/9.3/main/postgresql.conf.pgtune /etc/postgresql/9.3/main/postgresql.conf
 
 # Install schema_triggers
 RUN git clone https://github.com/CartoDB/pg_schema_triggers.git && \
