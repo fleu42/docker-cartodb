@@ -13,10 +13,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN apt-get update && \
-  useradd -m -d /home/cartodb -s /bin/bash cartodb &&\
-  apt-get install -y -q software-properties-common &&\
-  add-apt-repository -y ppa:chris-lea/node.js &&\
+RUN useradd -m -d /home/cartodb -s /bin/bash cartodb &&\
   apt-get update &&\
   apt-get install -y -q \
     build-essential \
@@ -46,10 +43,11 @@ RUN apt-get update && \
     postgresql-contrib-9.3 \
     postgresql-server-dev-9.3 \
     postgresql-plpython-9.3 \
+    postgresql-9.3-plproxy \
     postgresql-9.3-postgis-2.1 \
     postgresql-9.3-postgis-2.1-scripts \
     postgis \
-    nodejs \
+    ca-certificates \
     redis-server \
     python2.7-dev \
     python-setuptools \
@@ -87,8 +85,24 @@ RUN apt-get update && \
     libpango1.0-dev \
     libgif-dev \
     pgtune \
+    libgmp-dev \
+    libicu-dev \
   --no-install-recommends &&\
   rm -rf /var/lib/apt/lists/*
+
+# ogr2ogr2 static build, see https://github.com/CartoDB/cartodb/wiki/How-to-build-gdal-and-ogr2ogr2
+RUN cd /opt && git clone https://github.com/OSGeo/gdal ogr2ogr2 && cd ogr2ogr2 && \
+git remote add cartodb https://github.com/cartodb/gdal && git fetch cartodb && \
+git checkout trunk && git pull origin trunk && \
+git checkout upstream && git merge --ff-only origin/trunk && \
+git config --global user.email "you@example.com" && \
+git config --global user.name "Your Name" && \
+git checkout ogr2ogr2 && git merge upstream -m "Merged it" && \
+cd ogr2ogr2 && ./configure --disable-shared && make -j 4 && \
+cp apps/ogr2ogr /usr/bin/ogr2ogr2 && rm -rf /opt/ogr2ogr2 /root/.gitconfig
+
+# Install NodeJS
+RUN curl https://nodejs.org/download/release/v0.10.41/node-v0.10.41-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr
 
 # Install rvm
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
@@ -97,8 +111,8 @@ RUN echo 'source /usr/local/rvm/scripts/rvm' >> /etc/bash.bashrc
 RUN /bin/bash -l -c rvm requirements
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN echo rvm_max_time_flag=15 >> ~/.rvmrc
-RUN /bin/bash -l -c 'rvm install 1.9.3-p547 --patch railsexpress'
-RUN /bin/bash -l -c 'rvm use 1.9.3-p547 --default'
+RUN /bin/bash -l -c 'rvm install 2.2.3'
+RUN /bin/bash -l -c 'rvm use 2.2.3 --default'
 RUN /bin/bash -l -c 'gem install bundle archive-tar-minitar'
 
 # Install bundler
@@ -147,6 +161,12 @@ RUN git clone git://github.com/CartoDB/cartodb.git && \
             '{print $2}' | sed -e 's,p55,-p55,' )' && cd /cartodb && \
             /bin/bash -l -c 'bundle install'"
 
+# Geocoder SQL client + server
+RUN git clone https://github.com/CartoDB/geocoder-api.git &&\
+  ln -s /usr/local/rvm/rubies/ruby-2.2.3/bin/ruby /usr/bin &&\
+  cd geocoder-api/server/extension && PGUSER=postgres make install &&\
+  cd ../../client && PGUSER=postgres make install
+
 # Copy confs
 ADD ./config/CartoDB-dev.js \
       /CartoDB-SQL-API/config/environments/development.js
@@ -158,7 +178,7 @@ ADD ./create_dev_user /cartodb/script/create_dev_user
 ADD ./setup_organization.sh /cartodb/script/setup_organization.sh
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN service postgresql start && service redis-server start && \
-	bash -l -c "cd /cartodb && bash script/create_dev_user && bash script/setup_organization.sh" && \
+	bash -l -c "cd /cartodb && bash script/create_dev_user || bash script/create_dev_user && bash script/setup_organization.sh" && \
 	service postgresql stop && service redis-server stop
 
 EXPOSE 3000 8080 8181
