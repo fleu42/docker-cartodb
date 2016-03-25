@@ -1,6 +1,8 @@
 docker-cartodb
 ==============
 
+[![](https://badge.imagelayers.io/sverhoeven/cartodb:latest.svg)](https://imagelayers.io/?images=sverhoeven/cartodb:latest 'Get your own badge on imagelayers.io')
+
 This docker container provides a fully working cartodb development solution
 without the installation hassle.
 
@@ -17,14 +19,14 @@ How to build the container:
 
 ```
 git clone https://github.com/sverhoeven/docker-cartodb.git
-docker build -t="sverhoeven/docker-cartodb" docker-cartodb/
+docker build -t="sverhoeven/cartodb" docker-cartodb/
 ```
 
 How to run the container:
 -------------------------
 
 ```
-docker run -d -p 3000:3000 -p 8080:8080 -p 8181:8181 sverhoeven/docker-cartodb
+docker run -d -p 3000:3000 -p 8080:8080 -p 8181:8181 sverhoeven/cartodb
 ```
 
 You need to add `config/cartodb.nginx.proxy.conf` to /etc/nginx/conf.d/.
