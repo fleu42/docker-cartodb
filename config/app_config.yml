@@ -241,7 +241,7 @@ defaults: &defaults
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:
-    base_url: 'cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars'
+    base_url: '//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars'
     kinds: ['ghost', 'marker', 'mountain', 'pacman', 'planet', 'star']
     colors: ['green', 'orange', 'red', 'yellow']
   dropbox_api_key: ""
