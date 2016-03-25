@@ -185,6 +185,8 @@ RUN service postgresql start && service redis-server start && \
 
 EXPOSE 3000 8080 8181
 
+ENV GDAL_DATA /usr/share/gdal/1.10
+
 ADD ./startup.sh /opt/startup.sh
 
 CMD ["/bin/bash", "/opt/startup.sh"]
