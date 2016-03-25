@@ -164,11 +164,18 @@ RUN git clone git://github.com/CartoDB/cartodb.git && \
             /bin/bash -l -c 'bundle install'"
 
 # Geocoder SQL client + server
-RUN git clone https://github.com/CartoDB/geocoder-api.git &&\
+RUN git clone https://github.com/CartoDB/data-services &&\
+  cd /data-services/geocoder/extension && PGUSER=postgres make all install && cd / && \
+  git clone https://github.com/CartoDB/dataservices-api.git &&\
   ln -s /usr/local/rvm/rubies/ruby-2.2.3/bin/ruby /usr/bin &&\
-  cd geocoder-api/server/extension && PGUSER=postgres make install &&\
-  cd ../../client && PGUSER=postgres make install
-
+  cd /dataservices-api/server/extension && PGUSER=postgres make install &&\
+  cd ../lib/python/cartodb_services && python setup.py install &&\
+  cd ../../../../client && PGUSER=postgres make install &&\
+  service postgresql start && \
+  echo "CREATE ROLE geocoder WITH LOGIN SUPERUSER PASSWORD 'geocoder'" | psql -U postgres postgres &&\
+  createdb -U postgres -E UTF8 -O geocoder geocoder &&\
+  echo 'CREATE EXTENSION plpythonu;CREATE EXTENSION postgis;CREATE EXTENSION cartodb;CREATE EXTENSION cdb_geocoder;CREATE EXTENSION plproxy;CREATE EXTENSION cdb_dataservices_server;CREATE EXTENSION cdb_dataservices_client;' | psql -U geocoder geocoder &&\
+  service postgresql stop
 # Copy confs
 ADD ./config/CartoDB-dev.js \
       /CartoDB-SQL-API/config/environments/development.js
