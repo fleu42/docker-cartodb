@@ -153,7 +153,9 @@ RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
 
 # Install CartoDB (with the bug correction on bundle install)
 RUN git clone git://github.com/CartoDB/cartodb.git && \
-      cd cartodb && /bin/bash -l -c 'bundle install' || \
+      cd cartodb && \
+      perl -pi -e 's/jwt \(1\.5\.3\)/jwt (1.5.4)/' Gemfile.lock && \
+      /bin/bash -l -c 'bundle install' || \
       /bin/bash -l -c "cd $(/bin/bash -l -c 'gem contents \
             debugger-ruby_core_source' | grep CHANGELOG | sed -e \
             's,CHANGELOG.md,,') && /bin/bash -l -c 'rake add_source \
