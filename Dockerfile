@@ -90,14 +90,15 @@ RUN useradd -m -d /home/cartodb -s /bin/bash cartodb &&\
   --no-install-recommends &&\
   rm -rf /var/lib/apt/lists/*
 
+RUN git config --global user.email you@example.com
+RUN git config --global user.name "Your Name"
+
 # ogr2ogr2 static build, see https://github.com/CartoDB/cartodb/wiki/How-to-build-gdal-and-ogr2ogr2
 RUN cd /opt && git clone https://github.com/OSGeo/gdal ogr2ogr2 && cd ogr2ogr2 && \
 git remote add cartodb https://github.com/cartodb/gdal && git fetch cartodb && \
 git checkout trunk && git pull origin trunk && \
-git checkout upstream && git merge --ff-only origin/trunk && \
-git config --global user.email "you@example.com" && \
-git config --global user.name "Your Name" && \
-git checkout ogr2ogr2 && git merge upstream -m "Merged it" && \
+git checkout upstream && git merge -s ours --ff-only origin/trunk && \
+git checkout ogr2ogr2 && git merge -s ours upstream -m "Merged it" && \
 cd ogr2ogr2 && ./configure --disable-shared && make -j 4 && \
 cp apps/ogr2ogr /usr/bin/ogr2ogr2 && rm -rf /opt/ogr2ogr2 /root/.gitconfig
 
@@ -105,7 +106,7 @@ cp apps/ogr2ogr /usr/bin/ogr2ogr2 && rm -rf /opt/ogr2ogr2 /root/.gitconfig
 RUN curl https://nodejs.org/download/release/v0.10.41/node-v0.10.41-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr
 
 # Install rvm
-RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
+RUN gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys D39DC0E3
 RUN curl -L https://get.rvm.io | bash -s stable --ruby
 RUN echo 'source /usr/local/rvm/scripts/rvm' >> /etc/bash.bashrc
 RUN /bin/bash -l -c rvm requirements
@@ -176,6 +177,7 @@ RUN git clone https://github.com/CartoDB/data-services &&\
   createdb -U postgres -E UTF8 -O geocoder geocoder &&\
   echo 'CREATE EXTENSION plpythonu;CREATE EXTENSION postgis;CREATE EXTENSION cartodb;CREATE EXTENSION cdb_geocoder;CREATE EXTENSION plproxy;CREATE EXTENSION cdb_dataservices_server;CREATE EXTENSION cdb_dataservices_client;' | psql -U geocoder geocoder &&\
   service postgresql stop
+
 # Copy confs
 ADD ./config/CartoDB-dev.js \
       /CartoDB-SQL-API/config/environments/development.js
@@ -186,6 +188,7 @@ ADD ./config/database.yml /cartodb/config/database.yml
 ADD ./create_dev_user /cartodb/script/create_dev_user
 ADD ./setup_organization.sh /cartodb/script/setup_organization.sh
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications
 RUN service postgresql start && service redis-server start && \
 	bash -l -c "cd /cartodb && bash script/create_dev_user || bash script/create_dev_user && bash script/setup_organization.sh" && \
 	service postgresql stop && service redis-server stop
