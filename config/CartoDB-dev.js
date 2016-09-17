@@ -5,7 +5,7 @@ module.exports.base_url     = '(?:/api/:version|/user/:user/api/:version)';
 // X-SQLAPI-Profile header containing elapsed timing for various
 // steps taken for producing the response.
 module.exports.useProfiler = true;
-module.exports.log_format   = '[:date] :req[X-Real-IP] :method :req[Host]:url :status :response-time ms -> :res[Content-Type] (:res[X-SQLAPI-Profiler])';
+module.exports.log_format   = '[:date] :remote-addr :method :req[Host]:url :status :response-time ms -> :res[Content-Type] (:res[X-SQLAPI-Profiler])';
 // If log_filename is given logs will be written there, in append mode. Otherwise stdout is used (default).
 // Log file will be re-opened on receiving the HUP signal
 module.exports.log_filename = 'logs/cartodb-sql-api.log';
@@ -28,9 +28,11 @@ module.exports.db_pubuser   = 'publicuser';
 module.exports.db_pubuser_pass   = 'public';
 module.exports.db_host      = 'localhost';
 module.exports.db_port      = '5432';
+module.exports.db_batch_port      = '5432';
+module.exports.finished_jobs_ttl_in_seconds = 2 * 3600; // 2 hours
 // Max database connections in the pool
 // Subsequent connections will wait for a free slot.
-// NOTE: not used by OGR-mediated accesses 
+// NOTE: not used by OGR-mediated accesses
 module.exports.db_pool_size = 500;
 // Milliseconds before a connection is removed from pool
 module.exports.db_pool_idleTimeout = 30000;
@@ -59,6 +61,8 @@ module.exports.tableCacheMax = 8192;
 module.exports.tableCacheMaxAge = 1000*60*10;
 // Temporary directory, make sure it is writable by server user
 module.exports.tmpDir = '/tmp';
+// change ogr2ogr command or path
+module.exports.ogr2ogrCommand = 'ogr2ogr';
 // Optional statsd support
 module.exports.statsd = {
   host: 'localhost',
@@ -72,3 +76,4 @@ module.exports.health = {
     username: 'development',
     query: 'select 1'
 };
+module.exports.disabled_file = 'pids/disabled';
