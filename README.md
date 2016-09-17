@@ -1,7 +1,8 @@
 docker-cartodb
 ==============
 
-[![](https://badge.imagelayers.io/sverhoeven/cartodb:latest.svg)](https://imagelayers.io/?images=sverhoeven/cartodb:latest 'Get your own badge on imagelayers.io')
+[![](https://images.microbadger.com/badges/image/sverhoeven/cartodb.svg)](https://microbadger.com/#/images/sverhoeven/cartodb "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/version/sverhoeven/cartodb.svg)](https://hub.docker.com/r/sverhoeven/cartodb/)
 
 This docker container provides a fully working cartodb development solution
 without the installation hassle.
