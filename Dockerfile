@@ -1,7 +1,7 @@
 #
 # Cartodb container
 #
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 MAINTAINER Stefan Verhoeven <s.verhoeven@esciencecenter.nl>
 
 # Configuring locales
@@ -13,8 +13,8 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN useradd -m -d /home/cartodb -s /bin/bash cartodb &&\
-  apt-get update &&\
+RUN useradd -m -d /home/cartodb -s /bin/bash cartodb && \
+  apt-get update && \
   apt-get install -y -q \
     build-essential \
     autoconf \
@@ -28,7 +28,7 @@ RUN useradd -m -d /home/cartodb -s /bin/bash cartodb &&\
     git \
     subversion \
     curl \
-    libgeos-c1 \
+    libgeos-c1v5 \
     libgeos-dev \
     libjson0 \
     python-simplejson \
@@ -38,14 +38,14 @@ RUN useradd -m -d /home/cartodb -s /bin/bash cartodb &&\
     libproj-dev \
     gdal-bin \
     libgdal1-dev \
-    postgresql-9.3 \
-    postgresql-client-9.3 \
-    postgresql-contrib-9.3 \
-    postgresql-server-dev-9.3 \
-    postgresql-plpython-9.3 \
-    postgresql-9.3-plproxy \
-    postgresql-9.3-postgis-2.1 \
-    postgresql-9.3-postgis-2.1-scripts \
+    postgresql-9.5 \
+    postgresql-client-9.5 \
+    postgresql-contrib-9.5 \
+    postgresql-server-dev-9.5 \
+    postgresql-plpython-9.5 \
+    postgresql-9.5-plproxy \
+    postgresql-9.5-postgis-2.2 \
+    postgresql-9.5-postgis-scripts \
     postgis \
     ca-certificates \
     redis-server \
@@ -84,23 +84,25 @@ RUN useradd -m -d /home/cartodb -s /bin/bash cartodb &&\
     libjpeg8-dev \
     libpango1.0-dev \
     libgif-dev \
-    pgtune \
     libgmp-dev \
     libicu-dev \
-  --no-install-recommends &&\
+  --no-install-recommends && \
   rm -rf /var/lib/apt/lists/*
 
 RUN git config --global user.email you@example.com
 RUN git config --global user.name "Your Name"
 
 # ogr2ogr2 static build, see https://github.com/CartoDB/cartodb/wiki/How-to-build-gdal-and-ogr2ogr2
-RUN cd /opt && git clone https://github.com/OSGeo/gdal ogr2ogr2 && cd ogr2ogr2 && \
-git remote add cartodb https://github.com/cartodb/gdal && git fetch cartodb && \
-git checkout trunk && git pull origin trunk && \
-git checkout upstream && git merge -s ours --ff-only origin/trunk && \
-git checkout ogr2ogr2 && git merge -s ours upstream -m "Merged it" && \
-cd ogr2ogr2 && ./configure --disable-shared && make -j 4 && \
-cp apps/ogr2ogr /usr/bin/ogr2ogr2 && rm -rf /opt/ogr2ogr2 /root/.gitconfig
+# using cartodb instruction got error https://trac.osgeo.org/gdal/ticket/6073
+# https://github.com/OSGeo/gdal/compare/trunk...CartoDB:ogr2ogr2 has no code changes, so just use latest gdal tarball
+RUN cd /opt && \
+curl http://download.osgeo.org/gdal/2.1.1/gdal-2.1.1.tar.gz -o gdal-2.1.1.tar.gz && \
+tar -zxf gdal-2.1.1.tar.gz && \
+cd gdal-2.1.1 && \
+./configure --disable-shared && \
+make -j 4 && \
+cp apps/ogr2ogr /usr/bin/ogr2ogr2 && \
+rm -rf /opt/ogr2ogr2 /root/.gitconfig
 
 # Install NodeJS
 RUN curl https://nodejs.org/download/release/v0.10.41/node-v0.10.41-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr
@@ -120,10 +122,7 @@ RUN /bin/bash -l -c 'gem install bundle archive-tar-minitar'
 RUN /bin/bash -l -c 'gem install bundler --no-doc --no-ri'
 
 # Setting PostgreSQL
-RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/9.3/main/pg_hba.conf && \
-      pgtune -T Web -c 100 -i /etc/postgresql/9.3/main/postgresql.conf -o /etc/postgresql/9.3/main/postgresql.conf.pgtune && \
-      mv /etc/postgresql/9.3/main/postgresql.conf /etc/postgresql/9.3/main/postgresql.conf.orig && \
-      mv /etc/postgresql/9.3/main/postgresql.conf.pgtune /etc/postgresql/9.3/main/postgresql.conf
+RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/9.5/main/pg_hba.conf
 
 # Install schema_triggers
 RUN git clone https://github.com/CartoDB/pg_schema_triggers.git && \
@@ -131,7 +130,7 @@ RUN git clone https://github.com/CartoDB/pg_schema_triggers.git && \
       make all install && \
       sed -i \
       "/#shared_preload/a shared_preload_libraries = 'schema_triggers.so'" \
-      /etc/postgresql/9.3/main/postgresql.conf
+      /etc/postgresql/9.5/main/postgresql.conf
 ADD ./template_postgis.sh /tmp/template_postgis.sh
 RUN service postgresql start && /bin/su postgres -c \
       /tmp/template_postgis.sh && service postgresql stop
@@ -165,17 +164,17 @@ RUN git clone git://github.com/CartoDB/cartodb.git && \
             /bin/bash -l -c 'bundle install'"
 
 # Geocoder SQL client + server
-RUN git clone https://github.com/CartoDB/data-services &&\
+RUN git clone https://github.com/CartoDB/data-services && \
   cd /data-services/geocoder/extension && PGUSER=postgres make all install && cd / && \
-  git clone https://github.com/CartoDB/dataservices-api.git &&\
-  ln -s /usr/local/rvm/rubies/ruby-2.2.3/bin/ruby /usr/bin &&\
-  cd /dataservices-api/server/extension && PGUSER=postgres make install &&\
-  cd ../lib/python/cartodb_services && python setup.py install &&\
-  cd ../../../../client && PGUSER=postgres make install &&\
+  git clone https://github.com/CartoDB/dataservices-api.git && \
+  ln -s /usr/local/rvm/rubies/ruby-2.2.3/bin/ruby /usr/bin && \
+  cd /dataservices-api/server/extension && PGUSER=postgres make install && \
+  cd ../lib/python/cartodb_services && python setup.py install && \
+  cd ../../../../client && PGUSER=postgres make install && \
   service postgresql start && \
-  echo "CREATE ROLE geocoder WITH LOGIN SUPERUSER PASSWORD 'geocoder'" | psql -U postgres postgres &&\
-  createdb -U postgres -E UTF8 -O geocoder geocoder &&\
-  echo 'CREATE EXTENSION plpythonu;CREATE EXTENSION postgis;CREATE EXTENSION cartodb;CREATE EXTENSION cdb_geocoder;CREATE EXTENSION plproxy;CREATE EXTENSION cdb_dataservices_server;CREATE EXTENSION cdb_dataservices_client;' | psql -U geocoder geocoder &&\
+  echo "CREATE ROLE geocoder WITH LOGIN SUPERUSER PASSWORD 'geocoder'" | psql -U postgres postgres && \
+  createdb -U postgres -E UTF8 -O geocoder geocoder && \
+  echo 'CREATE EXTENSION plpythonu;CREATE EXTENSION postgis;CREATE EXTENSION cartodb;CREATE EXTENSION cdb_geocoder;CREATE EXTENSION plproxy;CREATE EXTENSION cdb_dataservices_server;CREATE EXTENSION cdb_dataservices_client;' | psql -U geocoder geocoder && \
   service postgresql stop
 
 # Copy confs
@@ -191,11 +190,10 @@ ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/s
 RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications
 RUN service postgresql start && service redis-server start && \
 	bash -l -c "cd /cartodb && bash script/create_dev_user || bash script/create_dev_user && bash script/setup_organization.sh" && \
-# Enable CARTO Builder    
+# Enable CARTO Builder
 #    bundle exec rake cartodb:features:enable_feature_for_all_users['editor-3'] && \
 #    bundle exec rake cartodb:features:enable_feature_for_all_users['explore_site']" && \
 	service postgresql stop && service redis-server stop
-
 
 EXPOSE 3000 8080 8181
 
