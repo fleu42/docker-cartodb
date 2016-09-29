@@ -40,4 +40,4 @@ This can be done by adding cartodb.localhost alias to your hosts file. For examp
 ```
 sudo sh -c 'echo 127.0.1.1 cartodb.localhost >> /etc/hosts'
 ```
-(For Windows it will be `C:\Windows\System32\drivers\etc\lmhosts`)
+(For Windows it will be `C:\Windows\System32\drivers\etc\hosts`)
