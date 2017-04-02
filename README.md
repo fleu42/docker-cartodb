@@ -1,7 +1,8 @@
 docker-cartodb
 ==============
 
-[![](https://badge.imagelayers.io/sverhoeven/cartodb:latest.svg)](https://imagelayers.io/?images=sverhoeven/cartodb:latest 'Get your own badge on imagelayers.io')
+[![](https://images.microbadger.com/badges/image/sverhoeven/cartodb.svg)](https://microbadger.com/#/images/sverhoeven/cartodb "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/version/sverhoeven/cartodb.svg)](https://hub.docker.com/r/sverhoeven/cartodb/)
 
 This docker container provides a fully working cartodb development solution
 without the installation hassle.
@@ -29,10 +30,14 @@ How to run the container:
 docker run -d -p 3000:3000 -p 8080:8080 -p 8181:8181 sverhoeven/cartodb
 ```
 
-You need to add `config/cartodb.nginx.proxy.conf` to /etc/nginx/conf.d/.
-This will setup a reverse proxy for the CartoDB/imports (3000), SQL Api (8080) and Map api (8181).
+The ports the cartodb container publishes must be combined behind a single [NGINX](http://nginx.org/) web server. 
+In the GitHub repo there is an [example NGINX config file (config/cartodb.nginx.proxy.conf)](https://github.com/sverhoeven/docker-cartodb/blob/master/config/cartodb.nginx.proxy.conf), which needs to be added to /etc/nginx/conf.d/ directory, after which the web server must be restarted.
+This will setup a reverse proxy for the CartoDB/imports (3000), SQL Api (8080) and Map api (8181) to default http port (80).
+Alternativly use instructions at https://hub.docker.com/r/spawnthink/cartodb-nginx/ to run NGINX as a docker container with the correct config file already in it.
 
-You also need to add cartodb.localhost alias to your hosts file. For example
+The CartoDB instance has been configured with the hostname `cartodb.localhost`, this means the web browser and web server need to be able to resolve `cartodb.localhost` to the machine where the web server is running.
+This can be done by adding cartodb.localhost alias to your hosts file. For example
 ```
 sudo sh -c 'echo 127.0.1.1 cartodb.localhost >> /etc/hosts'
 ```
+(For Windows it will be `C:\Windows\System32\drivers\etc\hosts`)
