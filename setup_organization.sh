@@ -1,9 +1,6 @@
 cd /cartodb
 source /usr/local/rvm/scripts/rvm
 
-echo "INSERT INTO feature_flags (id,name, restricted) VALUES (nextval('machine_added_feature_flags_id_seq'), 'editor-3', false);" | psql -U postgres carto_db_development && \
-echo "INSERT INTO feature_flags (id,name, restricted) VALUES (nextval('machine_added_feature_flags_id_seq'), 'explore_site', false);" | psql -U postgres carto_db_development && \
-
 ORGANIZATION_NAME="example"
 USERNAME="admin4example"
 EMAIL="admin@example.com"
