@@ -68,6 +68,8 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
+  #fullstory:
+    #org: 'XXXXX'
   facebook:
     app_id: ''
     admins: ''
@@ -102,6 +104,15 @@ defaults: &defaults
         wizard: ''
         filter: ''
         query: ''
+        applied_sql: ''
+        applied_cartocss: ''
+        modified_style_form: ''
+        completed_connection: ''
+        failed_connection: ''
+        created_analysis: ''
+        modified_analysis: ''
+        published_map: ''
+        exported_map: ''
       mailing_track:
         like_map: ''
         trending_map: ''
@@ -193,6 +204,7 @@ defaults: &defaults
       bucket_name: ''
       url_ttl: 7200
       async_long_uploads: false
+      s3_endpoint: ''
     uploads_path: 'public/uploads' # including 'uploads' assumes public path. Absolute path example: /tmp/exports/downloads
   importer:
     blacklisted_ip_addr: []
@@ -209,6 +221,7 @@ defaults: &defaults
       async_long_uploads: false
       proxy_uri:
       use_ssl: True
+      s3_endpoint: ''
 
     unp_temporal_folder: '/tmp/imports/'
     # It must end in `/uploads` and be accessible via HTTP, if relative will default to Rails.Root/#{uploads_path}
@@ -265,12 +278,18 @@ defaults: &defaults
   assets:
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes
+    # Example for configuring organization assets.
+    # If 'aws.s3' configuration exists, S3 is used for storing assets and 'assets.organization.bucket' value is required. If 'aws.s3' config is not present, assets will be stored locally.
+    # organization:
+    #   bucket: "tests" # Required if 'aws.s3' config is present. Bucket must exist beforehand. If no 'aws.s3' config is present, organization assets will be stored locally and this line is not needed.
+    #   max_size_in_bytes: 1048576 # Optional, default is 1 MB
+    #   location: 'organization_assets' # Optional subdirectory for local assets, default is 'organization_assets'
   app_assets:
-    asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
+    asset_host: "//cartodb.localhost"
   avatars:
     gravatar_enabled: true
-    base_url: '//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars'
-    kinds: ['ghost', 'marker', 'mountain', 'pacman', 'planet', 'star']
+    base_url: '/assets/unversioned/images/avatars'
+    kinds: ['ghost', 'heart', 'marker', 'mountain', 'pacman', 'planet', 'star']
     colors: ['green', 'orange', 'red', 'yellow']
   dropbox_api_key: ""
   gdrive:
@@ -280,7 +299,7 @@ defaults: &defaults
   # Use your Olark api id to enable it. If you remove this entry or don't define an app key, it won't be activated.
   olark:
     app_id: ''
-  enforce_non_empty_layer_css: true
+  enforce_non_empty_layer_css: false
   users_dumps:
     service:
       port: 00000
@@ -347,36 +366,10 @@ defaults: &defaults
             ratelimit_concurrency:  3
             ratelimit_ttl:          4
             ratelimit_wait_secs:    0.1
+  datasources:
+    arcgis_enabled: false
+    salesforce_enabled: false
   basemaps:
-    Nokia:
-      normal_day:
-        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
-        minZoom: '0'
-        maxZoom: '21'
-        className:    "nokia_normal_day"
-        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
-        name: 'Nokia normal Day'
-      terrain_day:
-        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/terrain.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
-        minZoom: '0'
-        maxZoom: '21'
-        className:    "nokia_terrain_day"
-        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
-        name: 'Nokia Terrain Day'
-      satellite_day:
-        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
-        minZoom: '0'
-        maxZoom: '21'
-        className:    "nokia_satellite_day"
-        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
-        name: 'Nokia Satellite Day'
-      hybrid_day:
-        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/hybrid.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
-        minZoom: '0'
-        maxZoom: '21'
-        className:    "nokia_hybrid_day"
-        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
-        name: 'Nokia hybrid Day'
     CARTO:
       positron_rainbow_labels:
         default: true
@@ -526,6 +519,30 @@ defaults: &defaults
     min_rows: 2000000
     statement_timeout: 1800000
     tolerance_px: 1.0
+  connectors:
+    odbc:
+      enabled: false
+      max_rows: nil
+    mysql:
+      enabled: true
+      max_rows: 500000
+    postgresql:
+      enabled: true
+      max_rows: 500000
+    hive:
+      enabled: false
+      max_rows: 500000
+    sqlserver:
+      enabled: false
+      max_rows: 500000
+  dataservices:
+    enabled:
+        geocoder_internal: true
+        hires_geocoder: false
+        isolines: false
+        routing: false
+        data_observatory: true
+
 
 development:
   <<: *defaults
@@ -538,7 +555,6 @@ development:
     url_purge_command: 'url.purge'
     retries: 5
     timeout: 5
-  enforce_non_empty_layer_css: false
 
 test:
   <<: *defaults

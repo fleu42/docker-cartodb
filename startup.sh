@@ -1,10 +1,9 @@
 #!/bin/bash
 
-PORT=3000
-
 service postgresql start
 service redis-server start
-service varnish start
+/opt/varnish/sbin/varnishd -a :6081 -T localhost:6082 -s malloc,256m -f /etc/varnish.vcl
+service nginx start
 
 cd /Windshaft-cartodb
 node app.js development &
@@ -16,5 +15,4 @@ cd /cartodb
 source /usr/local/rvm/scripts/rvm
 bundle exec script/restore_redis
 bundle exec script/resque > resque.log 2>&1 &
-bundle exec rails s -p $PORT
-
+bundle exec thin start --threaded -p 3000 --threadpool-size 5
