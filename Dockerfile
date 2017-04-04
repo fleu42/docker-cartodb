@@ -126,7 +126,8 @@ RUN cd /opt && \
 # Install NodeJS
 RUN curl https://nodejs.org/download/release/v0.10.41/node-v0.10.41-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr && \
   npm install -g grunt-cli && \
-  npm install -g npm@~2.14.0
+  npm install -g npm@~2.14.0 && \
+  rm -r /tmp/npm-* /root/.npm
 
 # Install rvm
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
@@ -138,7 +139,8 @@ RUN echo rvm_max_time_flag=15 >> ~/.rvmrc && \
     /bin/bash -l -c 'rvm install 2.2.3' && \
     /bin/bash -l -c 'rvm use 2.2.3 --default' && \
     /bin/bash -l -c 'gem install bundle archive-tar-minitar' && \
-    /bin/bash -l -c 'gem install bundler compass --no-doc --no-ri'
+    /bin/bash -l -c 'gem install bundler compass --no-doc --no-ri' && \
+    rm -rf /usr/local/rvm/src
 
 # Setting PostgreSQL
 RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/9.5/main/pg_hba.conf && \
@@ -171,22 +173,29 @@ RUN service postgresql start && /bin/su postgres -c \
 
 # Install CartoDB API
 RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git && \
-      cd CartoDB-SQL-API && npm install
+    cd CartoDB-SQL-API && \
+    npm install && \
+    rm -r /tmp/npm-* /root/.npm
 
 # Install Windshaft
 RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
-      cd Windshaft-cartodb && git checkout master && npm install && mkdir logs
+    cd Windshaft-cartodb && \
+    git checkout master && \
+    npm install && \
+    rm -r /tmp/npm-* /root/.npm && \
+    mkdir logs
 
 # Install CartoDB
 RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     cd cartodb && \
     git checkout master && \
     npm install && \
+    rm -r /tmp/npm-* /root/.npm && \
     perl -pi -e 's/gdal==1\.10\.0/gdal==1.11.3/' python_requirements.txt && \
     pip install --no-use-wheel -r python_requirements.txt && \
     /bin/bash -l -c 'bundle install' && \
     /bin/bash -l -c 'bundle exec grunt --environment development' && \
-    rm -rf .git
+    rm -rf .git /root/.cache/pip node_modules
 
 # Geocoder SQL client + server
 RUN git clone https://github.com/CartoDB/data-services && \
