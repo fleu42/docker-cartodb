@@ -106,8 +106,8 @@ RUN cd /opt && \
     cd varnish-3.0.7 && \
     ./configure --prefix=/opt/varnish && \
     make && \
-    make install &&
-    cd /opt &&
+    make install && \
+    cd /opt && \
     rm -rf varnish-3.0.7 varnish-3.0.7.tar.gz
 
 # ogr2ogr2 static build, see https://github.com/CartoDB/cartodb/wiki/How-to-build-gdal-and-ogr2ogr2
@@ -133,7 +133,7 @@ RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
     curl -L https://get.rvm.io | bash -s stable --ruby && \
     echo 'source /usr/local/rvm/scripts/rvm' >> /etc/bash.bashrc && \
     /bin/bash -l -c rvm requirements
-ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin && \
+ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN echo rvm_max_time_flag=15 >> ~/.rvmrc && \
     /bin/bash -l -c 'rvm install 2.2.3' && \
     /bin/bash -l -c 'rvm use 2.2.3 --default' && \
