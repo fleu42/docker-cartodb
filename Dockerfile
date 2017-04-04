@@ -147,6 +147,14 @@ RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/9.5/main/pg_hba.conf && \
     createuser tileuser --no-createrole --no-createdb --no-superuser -U postgres && \
     service postgresql stop
 
+# Crankshaft: CARTO Spatial Analysis extension for PostgreSQL
+RUN cd / && \
+    git clone https://github.com/CartoDB/crankshaft.git && \
+    cd /crankshaft && \
+    git checkout master && \
+    make install && \
+    cd ..
+
 # Initialize template postgis db
 ADD ./template_postgis.sh /tmp/template_postgis.sh
 RUN service postgresql start && /bin/su postgres -c \
