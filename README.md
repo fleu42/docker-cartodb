@@ -36,3 +36,13 @@ This can be done by adding cartodb.localhost alias to your hosts file. For examp
 sudo sh -c 'echo 127.0.1.1 cartodb.localhost >> /etc/hosts'
 ```
 (For Windows it will be `C:\Windows\System32\drivers\etc\hosts`)
+
+How to use a different hostname:
+--------------------------------
+
+For example to use `cartodb.example.com` as a hostname start with:
+```
+docker run -d -p 80:80 -e CARTO_HOST=cartodb.example.com sverhoeven/cartodb
+```
+
+The chosen hostname should also resolve to an IP adress of the machine where the web server is running.

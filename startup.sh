@@ -1,5 +1,8 @@
 #!/bin/bash
 
+CARTO_HOST=${CARTO_HOST=cartodb.localhost}
+perl -pi -e 's/cartodb\.localhost/$ENV{"CARTO_HOST"}/g' /etc/nginx/sites-enabled/default /cartodb/config/app_config.yml /Windshaft-cartodb/config/environments/development.js
+
 service postgresql start
 service redis-server start
 /opt/varnish/sbin/varnishd -a :6081 -T localhost:6082 -s malloc,256m -f /etc/varnish.vcl
