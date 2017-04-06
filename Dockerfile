@@ -130,16 +130,17 @@ RUN curl https://nodejs.org/download/release/v0.10.41/node-v0.10.41-linux-x64.ta
   rm -r /tmp/npm-* /root/.npm
 
 # Install rvm
+ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
     curl -L https://get.rvm.io | bash -s stable --ruby && \
     echo 'source /usr/local/rvm/scripts/rvm' >> /etc/bash.bashrc && \
-    /bin/bash -l -c rvm requirements
-ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-RUN echo rvm_max_time_flag=15 >> ~/.rvmrc && \
+    /bin/bash -l -c rvm requirements && \
+    echo rvm_max_time_flag=15 >> ~/.rvmrc && \
     /bin/bash -l -c 'rvm install 2.2.3' && \
     /bin/bash -l -c 'rvm use 2.2.3 --default' && \
     /bin/bash -l -c 'gem install bundle archive-tar-minitar' && \
     /bin/bash -l -c 'gem install bundler compass --no-doc --no-ri' && \
+    ln -s /usr/local/rvm/rubies/ruby-2.2.3/bin/ruby /usr/bin && \
     rm -rf /usr/local/rvm/src
 
 # Setting PostgreSQL
@@ -198,18 +199,14 @@ RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     rm -rf .git /root/.cache/pip node_modules
 
 # Geocoder SQL client + server
-RUN git clone https://github.com/CartoDB/data-services && \
+RUN git clone https://github.com/CartoDB/data-services.git && \
   cd /data-services/geocoder/extension && PGUSER=postgres make all install && cd / && \
   git clone https://github.com/CartoDB/dataservices-api.git && \
-  ln -s /usr/local/rvm/rubies/ruby-2.2.3/bin/ruby /usr/bin && \
-  cd /dataservices-api/server/extension && PGUSER=postgres make install && \
-  cd ../lib/python/cartodb_services && python setup.py install && \
-  cd ../../../../client && PGUSER=postgres make install && \
-  service postgresql start && \
-  echo "CREATE ROLE geocoder WITH LOGIN SUPERUSER PASSWORD 'geocoder'" | psql -U postgres postgres && \
-  createdb -U postgres -E UTF8 -O geocoder geocoder && \
-  echo 'CREATE EXTENSION plpythonu;CREATE EXTENSION postgis;CREATE EXTENSION cartodb;CREATE EXTENSION cdb_geocoder;CREATE EXTENSION plproxy;CREATE EXTENSION cdb_dataservices_server;CREATE EXTENSION cdb_dataservices_client;' | psql -U geocoder geocoder && \
-  service postgresql stop
+  cd /dataservices-api/server/extension && \
+  PGUSER=postgres make install && \
+  cd ../lib/python/cartodb_services && \
+  pip install -r requirements.txt && pip install . && \
+  cd ../../../../client && PGUSER=postgres make install
 
 # Copy confs
 ADD ./config/CartoDB-dev.js \
@@ -222,12 +219,14 @@ ADD ./create_dev_user /cartodb/script/create_dev_user
 ADD ./setup_organization.sh /cartodb/script/setup_organization.sh
 ADD ./config/cartodb.nginx.proxy.conf /etc/nginx/sites-enabled/default
 ADD ./config/varnish.vcl /etc/varnish.vcl
+ADD ./geocoder.sh /cartodb/script/geocoder.sh
+ADD ./geocoder_server.sql /cartodb/script/geocoder_server.sql
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications && \
     /opt/varnish/sbin/varnishd -a :6081 -T localhost:6082 -s malloc,256m -f /etc/varnish.vcl && \
     service postgresql start && service redis-server start && \
 	bash -l -c "cd /cartodb && bash script/create_dev_user || bash script/create_dev_user && \
-    bash script/setup_organization.sh" && \
+    bash script/setup_organization.sh && bash script/geocoder.sh" && \
 	service postgresql stop && service redis-server stop
 
 EXPOSE 80

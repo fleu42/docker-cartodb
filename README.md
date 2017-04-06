@@ -46,3 +46,16 @@ docker run -d -p 80:80 -e CARTO_HOST=cartodb.example.com sverhoeven/cartodb
 ```
 
 The chosen hostname should also resolve to an IP adress of the machine where the web server is running.
+
+Geocoder
+--------
+
+The internal geocoder is configured, but contains no data inside the image.
+
+To fill the internal geocoder run
+```
+docker exec -ti <carto docker container id> bash -c /cartodb/script/fill_geocoder.sh
+```
+
+This will run the scripts described at https://github.com/CartoDB/data-services/tree/master/geocoder
+It will use at least require 10Gb of diskspace to download the dumps and import them.
