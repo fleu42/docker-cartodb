@@ -34,8 +34,8 @@ var config = {
     //  2. {{=it.user}}: will use the username as extraced from `user_from_host` or `base_url_detached`.
     //  3. {{=it.port}}: will use the `port` from this very same configuration file.
     ,resources_url_templates: {
-        http: 'http://cartodb.localhost:{{=it.port}}/user/{{=it.user}}/api/v1/map',
-        https: 'http://cartodb.localhost:{{=it.port}}/user/{{=it.user}}/api/v1/map'
+        http: 'http://cartodb.localhost/user/{{=it.user}}/api/v1/map',
+        https: 'http://cartodb.localhost/user/{{=it.user}}/api/v1/map'
     }
 
     // Maximum number of connections for one process
