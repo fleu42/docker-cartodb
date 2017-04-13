@@ -33,10 +33,3 @@ rake cartodb:db:set_user_account_type["${SUBDOMAIN}",'[DEDICATED]']
 
 # Set dataservices server
 rake cartodb:db:configure_geocoder_extension_for_non_org_users[$SUBDOMAIN]
-
-USER_DB=`echo "SELECT database_name FROM users WHERE username='dev'" | psql -U postgres -t carto_db_development`
-psql -U postgres $USER_DB < /cartodb/script/geocoder_client.sql
-echo "CREATE EXTENSION cdb_dataservices_client;" | psql -U postgres $USER_DB
-echo "SELECT CDB_Conf_SetConf('user_config', '{"'"is_organization"'": false, "'"entity_name"'": "'"dev"'"}');" | psql -U postgres $USER_DB
-GEOCODER_DB=`echo "SELECT database_name FROM users WHERE username='geocoder'" | psql -A -U postgres -t carto_db_development`
-echo -e "SELECT CDB_Conf_SetConf('geocoder_server_config', '{ \"connection_str\": \"host=localhost port=5432 dbname=${GEOCODER_DB} user=postgres\"}');" | psql -U postgres $USER_DB

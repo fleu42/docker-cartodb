@@ -50,6 +50,9 @@ The chosen hostname should also resolve to an IP adress of the machine where the
 Geocoder
 --------
 
+The external geocoders like heremaps or mapzen have dummy api keys and do not work.
+No attempts haven been made or will be made in this Docker image to get the external geocoders to work.
+
 The internal geocoder is configured, but contains no data inside the image.
 
 To fill the internal geocoder run
@@ -58,4 +61,4 @@ docker exec -ti <carto docker container id> bash -c /cartodb/script/fill_geocode
 ```
 
 This will run the scripts described at https://github.com/CartoDB/data-services/tree/master/geocoder
-It will use at least require 10Gb of diskspace to download the dumps and import them.
+It will use at least require 5.7+7.8Gb of diskspace to download the dumps and import them.

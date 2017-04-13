@@ -220,6 +220,7 @@ ADD ./config/cartodb.nginx.proxy.conf /etc/nginx/sites-enabled/default
 ADD ./config/varnish.vcl /etc/varnish.vcl
 ADD ./geocoder.sh /cartodb/script/geocoder.sh
 ADD ./geocoder_server.sql /cartodb/script/geocoder_server.sql
+ADD ./fill_geocoder_server.sh /cartodb/script/fill_geocoder_server.sh
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications && \
     /opt/varnish/sbin/varnishd -a :6081 -T localhost:6082 -s malloc,256m -f /etc/varnish.vcl && \
