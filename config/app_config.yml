@@ -77,8 +77,8 @@ defaults: &defaults
     api_key:
   metrics:
     hubspot:
-      events_host: 'http://track.hubspot.com'
-      token: 'yourtoken'
+      events_host: ''
+      token: ''
       form_ids:
         newsletter: ''
       event_ids:

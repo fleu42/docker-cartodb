@@ -1,7 +1,6 @@
 #!/bin/bash
 
-CARTO_HOST=${CARTO_HOST=cartodb.localhost}
-perl -pi -e 's/cartodb\.localhost/$ENV{"CARTO_HOST"}/g' /etc/nginx/sites-enabled/default /cartodb/config/app_config.yml /Windshaft-cartodb/config/environments/development.js
+perl -pi -e 's/cartodb\.localhost/$ENV{"HOSTNAME"}/g' /etc/nginx/sites-enabled/default /cartodb/config/app_config.yml /Windshaft-cartodb/config/environments/development.js
 
 service postgresql start
 service redis-server start
