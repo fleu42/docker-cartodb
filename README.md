@@ -27,7 +27,7 @@ How to run the container:
 -------------------------
 
 ```
-docker run -d -p 80:80 sverhoeven/cartodb
+docker run -d -p 80:80 -h cartodb.localhost sverhoeven/cartodb
 ```
 
 The CartoDB instance has been configured with the hostname `cartodb.localhost`, this means the web browser and web server need to be able to resolve `cartodb.localhost` to an IP adress of the machine where the web server is running.
@@ -42,7 +42,7 @@ How to use a different hostname:
 
 For example to use `cartodb.example.com` as a hostname start with:
 ```
-docker run -d -p 80:80 -e CARTO_HOST=cartodb.example.com sverhoeven/cartodb
+docker run -d -p 80:80 -h cartodb.example.com sverhoeven/cartodb
 ```
 
 The chosen hostname should also resolve to an IP adress of the machine where the web server is running.

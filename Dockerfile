@@ -6,7 +6,7 @@ MAINTAINER Stefan Verhoeven <s.verhoeven@esciencecenter.nl>
 
 # Configuring locales
 ENV DEBIAN_FRONTEND noninteractive
-RUN dpkg-reconfigure locales && \
+RUN apt-get update && apt-get install -y -q apt-utils && apt-get install -y -q locales && dpkg-reconfigure locales && \
       locale-gen en_US.UTF-8 && \
       update-locale LANG=en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -14,7 +14,6 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 RUN useradd -m -d /home/cartodb -s /bin/bash cartodb && \
-  apt-get update && \
   apt-get install -y -q \
     build-essential \
     autoconf \

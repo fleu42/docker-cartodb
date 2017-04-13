@@ -29,8 +29,7 @@ defaults: &defaults
     internal:
       protocol:      'http'
       domain:        'cartodb.localhost'
-      port:          '8181'
-      host:          '127.0.0.1'
+      port:          '80'
       verifycert:     false
     private:
       protocol:      'http'
@@ -78,8 +77,8 @@ defaults: &defaults
     api_key:
   metrics:
     hubspot:
-      events_host: 'http://track.hubspot.com'
-      token: 'yourtoken'
+      events_host: ''
+      token: ''
       form_ids:
         newsletter: ''
       event_ids:
@@ -256,10 +255,10 @@ defaults: &defaults
         debug:              false
         visible:            true
         tiler_domain:       "cartodb.localhost"
-        tiler_port:         "8181"
+        tiler_port:         "80"
         tiler_protocol:     "http"
         sql_domain:         "cartodb.localhost"
-        sql_port:           "8080"
+        sql_port:           "80"
         sql_protocol:       "http"
         extra_params:       { cache_policy: 'persist' }
         tile_style_history: []
