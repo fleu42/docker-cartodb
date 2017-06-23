@@ -130,7 +130,7 @@ RUN curl https://nodejs.org/download/release/v0.10.41/node-v0.10.41-linux-x64.ta
 
 # Install rvm
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
-    curl -L https://get.rvm.io | bash -s stable --ruby && \
+    curl -sSL https://raw.githubusercontent.com/wayneeseguin/rvm/stable/binscripts/rvm-installer | bash -s stable --ruby && \
     echo 'source /usr/local/rvm/scripts/rvm' >> /etc/bash.bashrc && \
     /bin/bash -l -c rvm requirements
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
