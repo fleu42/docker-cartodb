@@ -123,9 +123,9 @@ RUN cd /opt && \
     rm -rf /opt/ogr2ogr2 /opt/gdal-2.1.1.tar.gz /root/.gitconfig /opt/gdal-2.1.1
 
 # Install NodeJS
-RUN curl https://nodejs.org/download/release/v0.10.41/node-v0.10.41-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr && \
+RUN curl https://nodejs.org/download/release/v6.9.2/node-v6.9.2-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr && \
   npm install -g grunt-cli && \
-  npm install -g npm@~2.14.0 && \
+  npm install -g npm@3.10.9 && \
   rm -r /tmp/npm-* /root/.npm
 
 # Install rvm
