@@ -123,15 +123,15 @@ RUN cd /opt && \
     rm -rf /opt/ogr2ogr2 /opt/gdal-2.1.1.tar.gz /root/.gitconfig /opt/gdal-2.1.1
 
 # Install NodeJS
-RUN curl https://nodejs.org/download/release/v0.10.41/node-v0.10.41-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr && \
+RUN curl https://nodejs.org/download/release/v6.9.2/node-v6.9.2-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr && \
   npm install -g grunt-cli && \
-  npm install -g npm@~2.14.0 && \
+  npm install -g npm@3.10.9 && \
   rm -r /tmp/npm-* /root/.npm
 
 # Install rvm
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
-    curl -L https://get.rvm.io | bash -s stable --ruby && \
+    curl -sSL https://raw.githubusercontent.com/wayneeseguin/rvm/stable/binscripts/rvm-installer | bash -s stable --ruby && \
     echo 'source /usr/local/rvm/scripts/rvm' >> /etc/bash.bashrc && \
     /bin/bash -l -c rvm requirements && \
     echo rvm_max_time_flag=15 >> ~/.rvmrc && \
@@ -162,14 +162,7 @@ ADD ./template_postgis.sh /tmp/template_postgis.sh
 RUN service postgresql start && /bin/su postgres -c \
       /tmp/template_postgis.sh && service postgresql stop
 
-# Install cartodb extension
-RUN git clone https://github.com/CartoDB/cartodb-postgresql && \
-      cd cartodb-postgresql && \
-      git checkout master && \
-      PGUSER=postgres make install
 ADD ./cartodb_pgsql.sh /tmp/cartodb_pgsql.sh
-RUN service postgresql start && /bin/su postgres -c \
-      /tmp/cartodb_pgsql.sh && service postgresql stop
 
 # Install CartoDB API
 RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git && \
@@ -189,10 +182,17 @@ RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
 RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     cd cartodb && \
     git checkout master && \
+    # Install cartodb extension
+    cd lib/sql && \
+    PGUSER=postgres make install && \
+    service postgresql start && /bin/su postgres -c \
+      /tmp/cartodb_pgsql.sh && service postgresql stop && \
+    cd - && \
     npm install && \
     rm -r /tmp/npm-* /root/.npm && \
     perl -pi -e 's/gdal==1\.10\.0/gdal==1.11.3/' python_requirements.txt && \
-    pip install --no-use-wheel -r python_requirements.txt && \
+    pip install --upgrade pip && \
+    pip install --no-binary :all: -r python_requirements.txt && \
     /bin/bash -l -c 'bundle install' && \
     /bin/bash -l -c 'bundle exec grunt --environment development' && \
     rm -rf .git /root/.cache/pip node_modules
@@ -220,12 +220,12 @@ ADD ./config/cartodb.nginx.proxy.conf /etc/nginx/sites-enabled/default
 ADD ./config/varnish.vcl /etc/varnish.vcl
 ADD ./geocoder.sh /cartodb/script/geocoder.sh
 ADD ./geocoder_server.sql /cartodb/script/geocoder_server.sql
-ADD ./fill_geocoder_server.sh /cartodb/script/fill_geocoder_server.sh
+ADD ./fill_geocoder.sh /cartodb/script/fill_geocoder.sh
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications && \
     /opt/varnish/sbin/varnishd -a :6081 -T localhost:6082 -s malloc,256m -f /etc/varnish.vcl && \
     service postgresql start && service redis-server start && \
-	bash -l -c "cd /cartodb && bash script/create_dev_user || bash script/create_dev_user && \
+	bash -l -c "cd /cartodb && bash script/create_dev_user && \
     bash script/setup_organization.sh && bash script/geocoder.sh" && \
 	service postgresql stop && service redis-server stop
 
