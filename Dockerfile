@@ -123,14 +123,14 @@ RUN cd /opt && \
     rm -rf /opt/ogr2ogr2 /opt/gdal-2.1.1.tar.gz /root/.gitconfig /opt/gdal-2.1.1
 
 # Install NodeJS
-RUN curl https://nodejs.org/download/release/v0.10.41/node-v0.10.41-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr && \
+RUN curl https://nodejs.org/download/release/v6.9.2/node-v6.9.2-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr && \
   npm install -g grunt-cli && \
-  npm install -g npm@~2.14.0 && \
+  npm install -g npm@3.10.9 && \
   rm -r /tmp/npm-* /root/.npm
 
 # Install rvm
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
-    curl -L https://get.rvm.io | bash -s stable --ruby && \
+    curl -sSL https://raw.githubusercontent.com/wayneeseguin/rvm/stable/binscripts/rvm-installer | bash -s stable --ruby && \
     echo 'source /usr/local/rvm/scripts/rvm' >> /etc/bash.bashrc && \
     /bin/bash -l -c rvm requirements
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
