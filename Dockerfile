@@ -161,14 +161,7 @@ ADD ./template_postgis.sh /tmp/template_postgis.sh
 RUN service postgresql start && /bin/su postgres -c \
       /tmp/template_postgis.sh && service postgresql stop
 
-# Install cartodb extension
-RUN git clone https://github.com/CartoDB/cartodb-postgresql && \
-      cd cartodb-postgresql && \
-      git checkout master && \
-      PGUSER=postgres make install
 ADD ./cartodb_pgsql.sh /tmp/cartodb_pgsql.sh
-RUN service postgresql start && /bin/su postgres -c \
-      /tmp/cartodb_pgsql.sh && service postgresql stop
 
 # Install CartoDB API
 RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git && \
@@ -188,6 +181,12 @@ RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
 RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     cd cartodb && \
     git checkout master && \
+    # Install cartodb extension
+    cd lib/sql && \
+    PGUSER=postgres make install && \
+    service postgresql start && /bin/su postgres -c \
+      /tmp/cartodb_pgsql.sh && service postgresql stop && \
+    cd - && \
     npm install && \
     rm -r /tmp/npm-* /root/.npm && \
     perl -pi -e 's/gdal==1\.10\.0/gdal==1.11.3/' python_requirements.txt && \
@@ -225,7 +224,7 @@ ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/s
 RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications && \
     /opt/varnish/sbin/varnishd -a :6081 -T localhost:6082 -s malloc,256m -f /etc/varnish.vcl && \
     service postgresql start && service redis-server start && \
-	bash -l -c "cd /cartodb && bash script/create_dev_user || bash script/create_dev_user && \
+	bash -l -c "cd /cartodb && bash script/create_dev_user && \
     bash script/setup_organization.sh" && \
 	service postgresql stop && service redis-server stop
 
