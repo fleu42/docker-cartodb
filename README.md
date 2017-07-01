@@ -23,6 +23,8 @@ git clone https://github.com/sverhoeven/docker-cartodb.git
 docker build -t=sverhoeven/cartodb docker-cartodb/
 ```
 
+The build uses the master branches of the [CartoDB GitHub repositories](https://github.com/CartoDB). A fresh build may fail when code requires newer dependencies then the Dockerfile provides or when code is not stable at the moment of building.
+
 How to run the container:
 -------------------------
 
