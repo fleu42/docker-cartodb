@@ -227,7 +227,8 @@ RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications && \
     service postgresql start && service redis-server start && \
 	bash -l -c "cd /cartodb && bash script/create_dev_user && \
     bash script/setup_organization.sh && bash script/geocoder.sh" && \
-	service postgresql stop && service redis-server stop
+	service postgresql stop && service redis-server stop && \
+    chmod +x /cartodb/script/fill_geocoder.sh
 
 EXPOSE 80
 

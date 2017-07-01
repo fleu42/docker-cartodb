@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # See https://github.com/CartoDB/data-services/issues/228#issuecomment-280037353
 # Not run during Docker build phase as it would make the image too big
 cd /data-services/geocoder
