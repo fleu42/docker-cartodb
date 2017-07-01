@@ -47,6 +47,29 @@ docker run -d -p 80:80 -h cartodb.example.com sverhoeven/cartodb
 
 The chosen hostname should also resolve to an IP adress of the machine where the web server is running.
 
+Persistent data
+---------------
+
+To persist the PostgreSQL data, the PostGreSQL data dir (/var/lib/postgresql) must be persisted outside the Cartodb Docker container.
+
+The PostGreSQL data dir is filled during the building of this Docker image and must be copied to the local filesystem and then the container must be started with the local copy volume mounted.
+
+```bash
+docker create --name cartodb_pgdata sverhoeven/cartodb
+# Change to directory to save the Postgresql data dir (cartodb_pgdata) of the CartoDB image
+docker cp cartodb_pgdata:/var/lib/postgresql $PWD/cartodb_pgdata
+docker rm -f cartodb_pgdata
+# Inside container cartodb_pgdata is owned by postgres (uid=105) user,
+# it should be owned by same user on the local filesystem
+sudo chown -R 105.105 $PWD/cartodb_pgdata
+```
+
+After this the CartoDB container will have a database that stays filled after restarts.
+The CartoDB container can be started with
+```
+docker run -d -p 80:80 -h cartodb.example.com -v $PWD/cartodb_pgdata:/var/lib/postgresql sverhoeven/cartodb
+```
+
 Geocoder
 --------
 
