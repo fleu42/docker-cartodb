@@ -237,3 +237,4 @@ ENV GDAL_DATA /usr/share/gdal/1.11
 ADD ./startup.sh /opt/startup.sh
 
 CMD ["/bin/bash", "/opt/startup.sh"]
+HEALTHCHECK CMD curl -f http://localhost || exit 1
