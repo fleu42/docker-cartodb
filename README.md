@@ -86,4 +86,4 @@ docker exec -ti <carto docker container id> bash -c /cartodb/script/fill_geocode
 ```
 
 This will run the scripts described at https://github.com/CartoDB/data-services/tree/master/geocoder
-It will use at least require 5.7+7.8Gb of diskspace to download the dumps and import them.
+It will use at least 5.7+7.8Gb of diskspace to download the dumps and import them.
