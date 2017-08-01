@@ -33,3 +33,6 @@ rake cartodb:db:set_user_account_type["${SUBDOMAIN}",'[DEDICATED]']
 
 # Set dataservices server
 rake cartodb:db:configure_geocoder_extension_for_non_org_users[$SUBDOMAIN]
+
+# Enable sync tables
+echo "UPDATE users SET sync_tables_enabled=true WHERE username='${SUBDOMAIN}'" | psql -U postgres -t carto_db_development

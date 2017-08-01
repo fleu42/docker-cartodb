@@ -221,6 +221,7 @@ ADD ./config/varnish.vcl /etc/varnish.vcl
 ADD ./geocoder.sh /cartodb/script/geocoder.sh
 ADD ./geocoder_server.sql /cartodb/script/geocoder_server.sql
 ADD ./fill_geocoder.sh /cartodb/script/fill_geocoder.sh
+ADD ./sync_tables_trigger.sh /cartodb/script/sync_tables_trigger.sh
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications && \
     /opt/varnish/sbin/varnishd -a :6081 -T localhost:6082 -s malloc,256m -f /etc/varnish.vcl && \
@@ -228,11 +229,16 @@ RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications && \
 	bash -l -c "cd /cartodb && bash script/create_dev_user && \
     bash script/setup_organization.sh && bash script/geocoder.sh" && \
 	service postgresql stop && service redis-server stop && \
-    chmod +x /cartodb/script/fill_geocoder.sh
+    chmod +x /cartodb/script/fill_geocoder.sh && \
+    chmod +x /cartodb/script/sync_tables_trigger.sh
 
 EXPOSE 80
 
 ENV GDAL_DATA /usr/share/gdal/1.11
+
+# Number of seconds between a sync tables task is run
+# Default interval is an hour, use `docker run -e SYNC_TABLES_INTERVAL=60 ...` to change it
+ENV SYNC_TABLES_INTERVAL 3600
 
 ADD ./startup.sh /opt/startup.sh
 

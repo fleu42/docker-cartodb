@@ -17,4 +17,5 @@ cd /cartodb
 source /usr/local/rvm/scripts/rvm
 bundle exec script/restore_redis
 bundle exec script/resque > resque.log 2>&1 &
+script/sync_tables_trigger.sh &
 bundle exec thin start --threaded -p 3000 --threadpool-size 5
