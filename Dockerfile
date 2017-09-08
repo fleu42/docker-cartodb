@@ -100,14 +100,14 @@ RUN git config --global user.name "Your Name"
 
 # Varnish 3, Ubuntu:16.04 comes with Varnish 4.1 which can't be run with anonymous admin telnet
 RUN cd /opt && \
-    wget https://repo.varnish-cache.org/source/varnish-3.0.7.tar.gz && \
-    tar -zxf varnish-3.0.7.tar.gz && \
+    wget http://varnish-cache.org/_downloads/varnish-3.0.7.tgz && \
+    tar -zxf varnish-3.0.7.tgz && \
     cd varnish-3.0.7 && \
     ./configure --prefix=/opt/varnish && \
     make && \
     make install && \
     cd /opt && \
-    rm -rf varnish-3.0.7 varnish-3.0.7.tar.gz
+    rm -rf varnish-3.0.7 varnish-3.0.7.tgz
 
 # ogr2ogr2 static build, see https://github.com/CartoDB/cartodb/wiki/How-to-build-gdal-and-ogr2ogr2
 # using cartodb instruction got error https://trac.osgeo.org/gdal/ticket/6073
@@ -194,7 +194,8 @@ RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     pip install --upgrade pip && \
     pip install --no-binary :all: -r python_requirements.txt && \
     /bin/bash -l -c 'bundle install' && \
-    /bin/bash -l -c 'bundle exec grunt --environment development' && \
+    cp config/grunt_development.json ./config/grunt_true.json && \
+    /bin/bash -l -c 'bundle exec grunt' && \
     rm -rf .git /root/.cache/pip node_modules
 
 # Geocoder SQL client + server
