@@ -209,6 +209,11 @@ RUN git clone https://github.com/CartoDB/data-services.git && \
   pip install -r requirements.txt && pip install . && \
   cd ../../../../client && PGUSER=postgres make install
 
+# Observertory extension
+RUN cd / && git clone --recursive https://github.com/CartoDB/observatory-extension.git && \
+  cd observatory-extension && \
+  PGUSER=postgres make deploy
+
 # Copy confs
 ADD ./config/CartoDB-dev.js \
       /CartoDB-SQL-API/config/environments/development.js
