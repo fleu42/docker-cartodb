@@ -7,10 +7,9 @@ docker-cartodb
 This docker container provides a fully working cartodb development solution
 without the installation hassle.
 
-Just run the commands and then connect to http://cartodb.localhost with your you browser.
+Just run the commands and then connect to http://cartodb.localhost with your browser.
 
-The default login is dev/pass1234. You may want to change it when you'll run
-it for the outside.
+The default login is dev/pass1234. You may want to change it when you run it for the outside.
 
 It also creates an 'example' organization with owner login admin4example/pass1234.
 Organization members can be created on http://cartodb.localhost/user/admin4example/organization
@@ -54,7 +53,7 @@ Persistent data
 
 To persist the PostgreSQL data, the PostGreSQL data dir (/var/lib/postgresql) must be persisted outside the Cartodb Docker container.
 
-The PostGreSQL data dir is filled during the building of this Docker image and must be copied to the local filesystem and then the container must be started with the local copy volume mounted.
+The PostgreSQL data dir is filled during the building of this Docker image and must be copied to the local filesystem and then the container must be started with the local copy volume mounted.
 
 ```bash
 docker create --name cartodb_pgdata sverhoeven/cartodb
@@ -76,7 +75,7 @@ Geocoder
 --------
 
 The external geocoders like heremaps or mapzen have dummy api keys and do not work.
-No attempts haven been made or will be made in this Docker image to get the external geocoders to work.
+No attempts have been made or will be made in this Docker image to get the external geocoders to work.
 
 The internal geocoder is configured, but contains no data inside the image.
 
