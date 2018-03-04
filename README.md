@@ -48,6 +48,11 @@ docker run -d -p 80:80 -h cartodb.example.com sverhoeven/cartodb
 
 The chosen hostname should also resolve to an IP adress of the machine where the web server is running.
 
+If you don't have a domain/subdomain pointing to your server yet, you can use the servers external ip address:
+```
+docker run -d -p 80:80 -h <servers-external-ip-address> sverhoeven/cartodb
+```
+
 Persistent data
 ---------------
 
