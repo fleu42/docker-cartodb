@@ -11,5 +11,3 @@ rake cartodb:db:configure_geocoder_extension_for_organizations[$ORGANIZATION_NAM
 
 # Enable sync tables
 echo "UPDATE users SET sync_tables_enabled=true WHERE username='${USERNAME}'" | psql -U postgres -t carto_db_development
-# Enable private maps
-echo "UPDATE users SET private_maps_enabled = 't'" | psql -U postgres -t carto_db_development
