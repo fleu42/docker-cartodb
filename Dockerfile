@@ -192,7 +192,7 @@ RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     npm install && \
     rm -r /tmp/npm-* /root/.npm && \
     perl -pi -e 's/gdal==1\.10\.0/gdal==1.11.3/' python_requirements.txt && \
-    pip install --upgrade pip && \
+    pip install --upgrade pip==9.0.3 && \
     pip install --no-binary :all: -r python_requirements.txt && \
     /bin/bash -l -c 'bundle install' && \
     cp config/grunt_development.json ./config/grunt_true.json && \
