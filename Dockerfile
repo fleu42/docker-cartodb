@@ -6,7 +6,7 @@ MAINTAINER Stefan Verhoeven <s.verhoeven@esciencecenter.nl>
 
 # Configuring locales
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && apt-get install -y -q apt-utils && apt-get install -y -q locales && dpkg-reconfigure locales && \
+RUN apt-get update && apt-get install -y -q apt-utils software-properties-common locales && dpkg-reconfigure locales && \
       locale-gen en_US.UTF-8 && \
       update-locale LANG=en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -14,6 +14,8 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 RUN useradd -m -d /home/cartodb -s /bin/bash cartodb && \
+  add-apt-repository -y ppa:chris-lea/redis-server && \
+  apt-get update && \
   apt-get install -y -q \
     build-essential \
     autoconf \
@@ -59,7 +61,6 @@ RUN useradd -m -d /home/cartodb -s /bin/bash cartodb && \
     python-argparse \
     python-gdal \
     python-chardet \
-    python-pip \
     python-all-dev \
     python-docutils \
     openssl \
@@ -151,6 +152,7 @@ RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/9.5/main/pg_hba.conf && \
 
 # Crankshaft: CARTO Spatial Analysis extension for PostgreSQL
 RUN cd / && \
+    curl https://bootstrap.pypa.io/get-pip.py | python && \
     git clone https://github.com/CartoDB/crankshaft.git && \
     cd /crankshaft && \
     git checkout master && \
@@ -192,7 +194,6 @@ RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     npm install && \
     rm -r /tmp/npm-* /root/.npm && \
     perl -pi -e 's/gdal==1\.10\.0/gdal==1.11.3/' python_requirements.txt && \
-    pip install --upgrade pip && \
     pip install --no-binary :all: -r python_requirements.txt && \
     /bin/bash -l -c 'bundle install' && \
     cp config/grunt_development.json ./config/grunt_true.json && \
