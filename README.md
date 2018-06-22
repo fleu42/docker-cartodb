@@ -53,6 +53,11 @@ If you don't have a domain/subdomain pointing to your server yet, you can use th
 docker run -d -p 80:80 -h <servers-external-ip-address> sverhoeven/cartodb
 ```
 
+Instead of setting hostname with `-h` you can also use the `CARTO_HOSTNAME` environment variable with:
+```
+docker run -d -p 80:80 -e CARTO_HOSTNAME=<servers-external-ip-address> cartodb.example.com sverhoeven/cartodb
+```
+
 Persistent data
 ---------------
 
