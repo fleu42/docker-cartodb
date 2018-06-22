@@ -20,4 +20,10 @@ source /usr/local/rvm/scripts/rvm
 bundle exec script/restore_redis
 bundle exec script/resque > resque.log 2>&1 &
 script/sync_tables_trigger.sh &
+
+# Recreate api keys in db and redis, so sql api is authenticated
+echo 'delete from api_keys' | psql -U postgres -t carto_db_development
+bundle exec rake carto:api_key:create_default
+
+# bundle exec rake carto:api_key:create_default
 bundle exec thin start --threaded -p 3000 --threadpool-size 5
