@@ -8,31 +8,31 @@ ADMIN_PASSWORD="pass1234"
 EMAIL="dev@example.com"
 
 echo "--- Creating databases"
-rake cartodb:db:setup
+bundle exec rake cartodb:db:setup
 
 echo "--- Create '${SUBDOMAIN}' user"
-rake cartodb:db:create_user --trace SUBDOMAIN="${SUBDOMAIN}" \
+bundle exec  rake cartodb:db:create_user --trace SUBDOMAIN="${SUBDOMAIN}" \
 	PASSWORD="${PASSWORD}" ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
 	EMAIL="${EMAIL}"
 
 # # Update your quota to 100GB
 echo "--- Updating quota to 100GB"
-rake cartodb:db:set_user_quota["${SUBDOMAIN}",102400]
+bundle exec  rake cartodb:db:set_user_quota["${SUBDOMAIN}",102400]
 
 # # Allow unlimited tables to be created
 echo "--- Allowing unlimited tables creation"
-rake cartodb:db:set_unlimited_table_quota["${SUBDOMAIN}"]
+bundle exec  rake cartodb:db:set_unlimited_table_quota["${SUBDOMAIN}"]
 
 # # Allow user to create private tables in addition to public
 echo "--- Allowing private tables creation"
-rake cartodb:db:set_user_private_tables_enabled["${SUBDOMAIN}",'true']
+bundle exec  rake cartodb:db:set_user_private_tables_enabled["${SUBDOMAIN}",'true']
 
 # # Set the account type
 echo "--- Setting cartodb account type"
-rake cartodb:db:set_user_account_type["${SUBDOMAIN}",'[DEDICATED]']
+bundle exec  rake cartodb:db:set_user_account_type["${SUBDOMAIN}",'[DEDICATED]']
 
 # Set dataservices server
-rake cartodb:db:configure_geocoder_extension_for_non_org_users[$SUBDOMAIN]
+bundle exec  rake cartodb:db:configure_geocoder_extension_for_non_org_users[$SUBDOMAIN]
 
 # Enable sync tables
 echo "UPDATE users SET sync_tables_enabled=true WHERE username='${SUBDOMAIN}'" | psql -U postgres -t carto_db_development
