@@ -13,6 +13,21 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
+#ENV CARTODB_VERSION=v4.11.152
+ENV CARTODB_VERSION=v4.12.9
+ENV SQLAPI_VERSION=master
+ENV CRANKSHAFT_VERSION=master
+ENV WINDSHAFT_VERSION=master
+#ENV SQLAPI_VERSION=1.47.2
+#ENV CRANKSHAFT_VERSION=0.8.1
+#ENV WINDSHAFT_VERSION=5.4.0
+ENV DATASERVICES_VERSION=master
+ENV DATAERVICESAPI_VERSION=master
+#ENV DATASERVICES_VERSION=0.0.2
+#ENV DATAERVICESAPI_VERSION=0.30.5-server
+ENV OBSERVATORY_VERSION=master
+#ENV OBSERVATORY_VERSION=1.9.0
+
 RUN useradd -m -d /home/cartodb -s /bin/bash cartodb && \
   apt-get install -y -q \
     build-essential \
@@ -125,7 +140,7 @@ RUN cd / && \
     curl https://bootstrap.pypa.io/get-pip.py | python && \
     git clone https://github.com/CartoDB/crankshaft.git && \
     cd /crankshaft && \
-    git checkout master && \
+    git checkout $CRANKSHAFT_VERSION && \
     make install && \
     cd ..
 
@@ -139,13 +154,14 @@ ADD ./cartodb_pgsql.sh /tmp/cartodb_pgsql.sh
 # Install CartoDB API
 RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git && \
     cd CartoDB-SQL-API && \
+    git checkout $SQLAPI_VERSION && \
     npm install && \
     rm -r /tmp/npm-* /root/.npm
 
 # Install Windshaft
 RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
     cd Windshaft-cartodb && \
-    git checkout master && \
+    git checkout $WINDSHAFT_VERSION && \
     npm install -g yarn@0.27.5 && \
     yarn install && \
     rm -r /tmp/npm-* /root/.npm && \
@@ -154,7 +170,7 @@ RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
 # Install CartoDB
 RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     cd cartodb && \
-    git checkout master && \
+    git checkout $CARTODB_VERSION && \
     # Install cartodb extension
     cd lib/sql && \
     PGUSER=postgres make install && \
@@ -168,14 +184,18 @@ RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     gem install bundler bundle compass archive-tar-minitar && \
     /bin/bash -l -c 'bundle install' && \
     cp config/grunt_development.json ./config/grunt_true.json && \
-    /bin/bash -l -c 'bundle exec grunt' && \
-    rm -rf .git /root/.cache/pip node_modules
+    /bin/bash -l -c 'bundle exec grunt'
+    # && \
+    #rm -rf .git /root/.cache/pip node_modules
 
 # Geocoder SQL client + server
 RUN git clone https://github.com/CartoDB/data-services.git && \
-  cd /data-services/geocoder/extension && PGUSER=postgres make all install && cd / && \
+  cd /data-services/geocoder/extension && \
+  git checkout $DATASERVICES_VERSION && \
+  PGUSER=postgres make all install && cd / && \
   git clone https://github.com/CartoDB/dataservices-api.git && \
   cd /dataservices-api/server/extension && \
+  git checkout $DATAERVICESAPI_VERSION && \
   PGUSER=postgres make install && \
   cd ../lib/python/cartodb_services && \
   pip install -r requirements.txt && pip install . && \
@@ -184,6 +204,7 @@ RUN git clone https://github.com/CartoDB/data-services.git && \
 # Observatory extension
 RUN cd / && git clone --recursive https://github.com/CartoDB/observatory-extension.git && \
   cd observatory-extension && \
+  git checkout $OBSERVATORY_VERSION && \
   PGUSER=postgres make deploy
 
 # Copy confs
@@ -206,6 +227,7 @@ RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications && \
     /opt/varnish/sbin/varnishd -a :6081 -T localhost:6082 -s malloc,256m -f /etc/varnish.vcl && \
     perl -pi.bak -e 's/^bind 127.0.0.1 ::1$/bind 0.0.0.0/' /etc/redis/redis.conf && \
     service postgresql start && service redis-server start && \
+    perl -pi -e 's/0\.22\.0/0.22.2/' /cartodb/app/models/user/db_service.rb && \
 	bash -l -c "cd /cartodb && bash script/create_dev_user && \
     bash script/setup_organization.sh && bash script/geocoder.sh" && \
 	service postgresql stop && service redis-server stop && \
