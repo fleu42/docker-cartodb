@@ -238,7 +238,7 @@ RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications && \
 
 EXPOSE 80
 
-ENV GDAL_DATA /usr/share/gdal/1.11
+ENV GDAL_DATA /usr/share/gdal/2.2
 
 # Number of seconds between a sync tables task is run
 # Default interval is an hour, use `docker run -e SYNC_TABLES_INTERVAL=60 ...` to change it
