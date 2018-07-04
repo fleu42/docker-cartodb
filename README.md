@@ -84,7 +84,7 @@ docker run -d -p 80:80 -h cartodb.example.com -v $PWD/cartodb_pgdata:/var/lib/po
 Geocoder
 --------
 
-The external geocoders like heremaps or mapzen have dummy api keys and do not work.
+The external geocoders like heremaps, mapbox, mapzen or tomtom have dummy api keys and do not work.
 No attempts have been made or will be made in this Docker image to get the external geocoders to work.
 
 The internal geocoder is configured, but contains no data inside the image.
