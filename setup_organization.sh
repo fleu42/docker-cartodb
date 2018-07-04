@@ -13,3 +13,5 @@ bundle exec rake cartodb:db:configure_geocoder_extension_for_organizations[$ORGA
 echo "UPDATE users SET sync_tables_enabled=true WHERE username='${USERNAME}'" | psql -U postgres -t carto_db_development
 # Enable private maps
 echo "UPDATE users SET private_maps_enabled = 't'" | psql -U postgres -t carto_db_development
+
+bundle exec rake cartodb:features:enable_feature_for_all_users["new_dashboard"]

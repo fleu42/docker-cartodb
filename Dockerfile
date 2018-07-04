@@ -16,7 +16,8 @@ ENV LC_ALL en_US.UTF-8
 #ENV CARTODB_VERSION=v4.11.152
 #ENV CARTODB_VERSION=v4.12.9
 #ENV CARTODB_VERSION=v4.12.26
-ENV CARTODB_VERSION=v4.12.30
+#ENV CARTODB_VERSION=v4.12.30
+ENV CARTODB_VERSION=master
 #ENV SQLAPI_VERSION=1.47.2
 ENV SQLAPI_VERSION=master
 #ENV CRANKSHAFT_VERSION=0.8.1
@@ -113,7 +114,7 @@ RUN useradd -m -d /home/cartodb -s /bin/bash cartodb && \
 RUN git config --global user.email you@example.com
 RUN git config --global user.name "Your Name"
 
-# Varnish 3, Ubuntu:17.04 comes with Varnish 5.1 which can't be run with anonymous admin telnet
+# Varnish 3, Ubuntu:18.04 comes with Varnish 5.1 which can't be run with anonymous admin telnet
 RUN cd /opt && \
     wget http://varnish-cache.org/_downloads/varnish-3.0.7.tgz && \
     tar -zxf varnish-3.0.7.tgz && \
