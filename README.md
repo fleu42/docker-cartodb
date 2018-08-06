@@ -70,9 +70,6 @@ docker create --name cartodb_pgdata sverhoeven/cartodb
 # Change to directory to save the Postgresql data dir (cartodb_pgdata) of the CartoDB image
 docker cp cartodb_pgdata:/var/lib/postgresql $PWD/cartodb_pgdata
 docker rm -f cartodb_pgdata
-# Inside container cartodb_pgdata is owned by postgres (uid=103) user,
-# it should be owned by same user on the local filesystem
-sudo chown -R 103.103 $PWD/cartodb_pgdata
 ```
 
 After this the CartoDB container will have a database that stays filled after restarts.

@@ -4,6 +4,13 @@ export CARTO_HOSTNAME=${CARTO_HOSTNAME:=$HOSTNAME}
 
 perl -pi -e 's/cartodb\.localhost/$ENV{"CARTO_HOSTNAME"}/g' /etc/nginx/sites-enabled/default /cartodb/config/app_config.yml /Windshaft-cartodb/config/environments/development.js
 
+PGDATA=/var/lib/postgresql
+if [ "$(stat -c %U $PGDATA)" != "postgres" ]; then
+(>&2 echo "${PGDATA} not owned by postgres, updating permissions")
+chown -R postgres $PGDATA
+chmod 700 $PGDATA
+fi
+
 service postgresql start
 service redis-server start
 /opt/varnish/sbin/varnishd -a :6081 -T localhost:6082 -s malloc,256m -f /etc/varnish.vcl
