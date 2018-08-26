@@ -145,6 +145,9 @@ RUN cd / && \
     cd /crankshaft && \
     git checkout $CRANKSHAFT_VERSION && \
     make install && \
+    # Numpy gets upgraded after scikit-learn is installed
+    # make sure scikit-learn is compatible with currently installed numpy, by reinstalling
+    pip install --force-reinstall --no-cache-dir scikit-learn==0.14.1 && \
     cd ..
 
 # Initialize template postgis db
