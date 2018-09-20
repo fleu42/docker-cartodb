@@ -4,7 +4,7 @@ docker-cartodb
 [![](https://images.microbadger.com/badges/image/sverhoeven/cartodb.svg)](https://microbadger.com/#/images/sverhoeven/cartodb "Get your own image badge on microbadger.com")
 [![](https://images.microbadger.com/badges/version/sverhoeven/cartodb.svg)](https://hub.docker.com/r/sverhoeven/cartodb/)
 
-This docker container provides a fully working cartodb development solution
+This Docker container image provides a fully working cartodb development solution
 without the installation hassle.
 
 Just run the commands and then connect to http://cartodb.localhost with your browser.
@@ -13,16 +13,6 @@ The default login is dev/pass1234. You may want to change it when you run it for
 
 It also creates an 'example' organization with owner login admin4example/pass1234.
 Organization members can be created on http://cartodb.localhost/user/admin4example/organization
-
-How to build the container:
----------------------------
-
-```
-git clone https://github.com/sverhoeven/docker-cartodb.git
-docker build -t=sverhoeven/cartodb docker-cartodb/
-```
-
-The build uses the master branches of the [CartoDB GitHub repositories](https://github.com/CartoDB). A fresh build may fail when code requires newer dependencies then the Dockerfile provides or when code is not stable at the moment of building.
 
 How to run the container:
 -------------------------
@@ -93,3 +83,14 @@ docker exec -ti <carto docker container id> bash -c /cartodb/script/fill_geocode
 
 This will run the scripts described at https://github.com/CartoDB/data-services/tree/master/geocoder
 It will use at least 5.7+7.8Gb of diskspace to download the dumps and import them.
+
+How to build the image:
+-----------------------
+
+The image can be build with
+```
+git clone https://github.com/sverhoeven/docker-cartodb.git
+docker build -t=sverhoeven/cartodb docker-cartodb/
+```
+
+The build uses the master branches of the [CartoDB GitHub repositories](https://github.com/CartoDB). A fresh build may fail when code requires newer dependencies then the Dockerfile provides or when code is not stable at the moment of building.
