@@ -187,7 +187,7 @@ RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     rm -r /tmp/npm-* /root/.npm && \
     perl -pi -e 's/gdal==1\.10\.0/gdal==2.2.2/' python_requirements.txt && \
     pip install --no-binary :all: -r python_requirements.txt && \
-    gem install bundler bundle compass archive-tar-minitar rack && \
+    gem install bundler --version=1.17.3 && gem install compass archive-tar-minitar rack && \
     bundle update thin && \
     /bin/bash -l -c 'bundle install' && \
     cp config/grunt_development.json ./config/grunt_true.json && \
