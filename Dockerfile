@@ -108,6 +108,7 @@ RUN useradd -m -d /home/cartodb -s /bin/bash cartodb && \
     nginx-light \
     net-tools \
     ruby2.5-dev \
+    xz-utils \
   --no-install-recommends && \
   rm -rf /var/lib/apt/lists/*
 
@@ -126,9 +127,9 @@ RUN cd /opt && \
     rm -rf varnish-3.0.7 varnish-3.0.7.tgz
 
 # Install NodeJS
-RUN curl https://nodejs.org/download/release/v6.9.2/node-v6.9.2-linux-x64.tar.gz| tar -zxf - --strip-components=1 -C /usr && \
+RUN curl https://nodejs.org/dist/v10.15.3/node-v10.15.3-linux-x64.tar.xz |tar -Jxf - --strip-components=1 -C /usr && \
   npm install -g grunt-cli && \
-  npm install -g npm@3.10.9 && \
+  npm install -g npm@6 && \
   rm -r /tmp/npm-* /root/.npm
 
 # Setting PostgreSQL
@@ -147,7 +148,7 @@ RUN cd / && \
     make install && \
     # Numpy gets upgraded after scikit-learn is installed
     # make sure scikit-learn is compatible with currently installed numpy, by reinstalling
-    pip install --force-reinstall --no-cache-dir scikit-learn==0.14.1 && \
+    pip install --force-reinstall --no-cache-dir scikit-learn==0.17.0 && \
     cd ..
 
 # Initialize template postgis db
@@ -168,9 +169,9 @@ RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git && \
 RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
     cd Windshaft-cartodb && \
     git checkout $WINDSHAFT_VERSION && \
-    npm install -g yarn@0.27.5 && \
+    npm install -g yarn && \
     yarn install && \
-    rm -r /tmp/npm-* /root/.npm && \
+    #rm -r /tmp/npm-* /root/.npm && \
     mkdir logs
 
 # Install CartoDB

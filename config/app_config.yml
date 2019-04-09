@@ -7,6 +7,7 @@ defaults: &defaults
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     true
+    memory_limit:
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
   session_domain:     'cartodb.localhost'
@@ -129,7 +130,7 @@ defaults: &defaults
     protocol: 'https'
     username: 'common-data'
     base_url: 'https://common-data.carto.com'
-    format: 'shp'
+    format: 'gpkg'
     generate_every: 86400
   explore_api:
     username: ''
@@ -156,6 +157,7 @@ defaults: &defaults
     critical: false
     host: '127.0.0.1'
     port: 6082
+    http_port: 6081
     purge_command: 'purge'
     retries: 5
     timeout: 5
@@ -207,9 +209,10 @@ defaults: &defaults
       base_url: ''
       api_key: ''
       table_name: ''
-    mapzen:
-      search_bar_api_key: ''
+    search_bar_provider: ''
     mapbox:
+      search_bar_api_key: ''
+    tomtom:
       search_bar_api_key: ''
     # api:
     #   host: 'localhost'
