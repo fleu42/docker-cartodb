@@ -162,16 +162,14 @@ ADD ./cartodb_pgsql.sh /tmp/cartodb_pgsql.sh
 RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git && \
     cd CartoDB-SQL-API && \
     git checkout $SQLAPI_VERSION && \
-    npm install && \
-    rm -r /tmp/npm-* /root/.npm
+    npm install -g yarn && \
+    yarn install
 
 # Install Windshaft
 RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
     cd Windshaft-cartodb && \
     git checkout $WINDSHAFT_VERSION && \
-    npm install -g yarn && \
     yarn install && \
-    #rm -r /tmp/npm-* /root/.npm && \
     mkdir logs
 
 # Install CartoDB
