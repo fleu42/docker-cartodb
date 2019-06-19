@@ -169,7 +169,7 @@ RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git && \
 RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
     cd Windshaft-cartodb && \
     git checkout $WINDSHAFT_VERSION && \
-    yarn install && \
+    npm install && \
     mkdir logs
 
 # Install CartoDB
