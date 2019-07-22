@@ -221,7 +221,7 @@ ADD ./config/app_config.yml /cartodb/config/app_config.yml
 ADD ./config/database.yml /cartodb/config/database.yml
 ADD ./create_dev_user /cartodb/script/create_dev_user
 ADD ./setup_organization.sh /cartodb/script/setup_organization.sh
-ADD ./config/cartodb.nginx.proxy.conf /etc/nginx/sites-enabled/default
+ADD ./config/cartodb.nginx.proxy.conf /etc/nginx/nginx.conf
 ADD ./config/varnish.vcl /etc/varnish.vcl
 ADD ./geocoder.sh /cartodb/script/geocoder.sh
 ADD ./geocoder_server.sql /cartodb/script/geocoder_server.sql
