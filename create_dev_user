@@ -5,7 +5,7 @@ set -e
 SUBDOMAIN="dev"
 PASSWORD="pass1234"
 ADMIN_PASSWORD="pass1234"
-EMAIL="dev@example.com"
+EMAIL="dev@contoso.com"
 
 echo "--- Creating databases"
 bundle exec rake cartodb:db:setup
