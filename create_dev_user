@@ -34,5 +34,9 @@ bundle exec  rake cartodb:db:set_user_account_type["${SUBDOMAIN}",'[DEDICATED]']
 # Set dataservices server
 bundle exec  rake cartodb:db:configure_geocoder_extension_for_non_org_users[$SUBDOMAIN]
 
+# Set import limits
+bundle exec rake cartodb:set_custom_limits_for_user["${SUBDOMAIN}",10240000000,100000000,1]
+
+
 # Enable sync tables
 echo "UPDATE users SET sync_tables_enabled=true WHERE username='${SUBDOMAIN}'" | psql -U postgres -t carto_db_development
