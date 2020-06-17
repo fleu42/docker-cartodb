@@ -1,0 +1,12 @@
+# YAML 1.2
+# Metadata for citation of this software according to the CFF format (https://citation-file-format.github.io/)
+cff-version: 1.0.3
+message: If you use this software, please cite it as below.
+title: Carto Docker image
+authors:
+- given-names: Stefan
+  family-names: Verhoeven
+  affiliation: Nederlands eScience Center
+repository-code: https://github.com/sverhoeven/docker-cartodb
+license: BSD 3-Clause
+commit: a175e8b711b6c0813465fb8781b039987d65f3c2

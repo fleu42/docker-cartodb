@@ -1,32 +1,42 @@
 #!/bin/sh
 
+set -e
+
 SUBDOMAIN="dev"
-PASSWORD="pass"
-ADMIN_PASSWORD="pass"
-EMAIL="dev@example.com"
+PASSWORD="pass1234"
+ADMIN_PASSWORD="pass1234"
+EMAIL="dev@contoso.com"
 
 echo "--- Creating databases"
-bundle exec rake cartodb:db:setup --trace SUBDOMAIN="${SUBDOMAIN}" \
+bundle exec rake cartodb:db:setup
+
+echo "--- Create '${SUBDOMAIN}' user"
+bundle exec  rake cartodb:db:create_user --trace SUBDOMAIN="${SUBDOMAIN}" \
 	PASSWORD="${PASSWORD}" ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
 	EMAIL="${EMAIL}"
-if test $? -ne 0; then exit 1; fi
 
 # # Update your quota to 100GB
 echo "--- Updating quota to 100GB"
-bundle exec rake cartodb:db:set_user_quota["${SUBDOMAIN}",102400]
-if test $? -ne 0; then exit 1; fi
+bundle exec  rake cartodb:db:set_user_quota["${SUBDOMAIN}",102400]
 
 # # Allow unlimited tables to be created
 echo "--- Allowing unlimited tables creation"
-bundle exec rake cartodb:db:set_unlimited_table_quota["${SUBDOMAIN}"]
-if test $? -ne 0; then exit 1; fi
+bundle exec  rake cartodb:db:set_unlimited_table_quota["${SUBDOMAIN}"]
 
 # # Allow user to create private tables in addition to public
 echo "--- Allowing private tables creation"
-bundle exec rake cartodb:db:set_user_private_tables_enabled["${SUBDOMAIN}",'true']
- if test $? -ne 0; then exit 1; fi
+bundle exec  rake cartodb:db:set_user_private_tables_enabled["${SUBDOMAIN}",'true']
 
 # # Set the account type
 echo "--- Setting cartodb account type"
-bundle exec rake cartodb:db:set_user_account_type["${SUBDOMAIN}",'[DEDICATED]']
-if test $? -ne 0; then exit 1; fi
+bundle exec  rake cartodb:db:set_user_account_type["${SUBDOMAIN}",'[DEDICATED]']
+
+# Set dataservices server
+bundle exec  rake cartodb:db:configure_geocoder_extension_for_non_org_users[$SUBDOMAIN]
+
+# Set import limits
+bundle exec rake cartodb:set_custom_limits_for_user["${SUBDOMAIN}",10240000000,100000000,1]
+
+
+# Enable sync tables
+echo "UPDATE users SET sync_tables_enabled=true WHERE username='${SUBDOMAIN}'" | psql -U postgres -t carto_db_development
